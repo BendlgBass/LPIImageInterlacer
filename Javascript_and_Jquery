@@ -1,0 +1,102 @@
+$(function() {
+  function updateImage(inputId, imgId, hideId) {
+    var newPic = $("<img>", {
+      id: imgId,
+      alt: imgId + ".png"
+    }).css
+     
+      ("width", "auto");
+      ("height", "auto");
+   
+    var myFile = $(inputId)[0].files[0];
+    var reader = new FileReader();
+    reader.onload = function(event) {
+      newPic.attr("src", event.target.result);
+      $(hideId).empty().append(newPic);
+    };
+    reader.readAsDataURL(myFile);
+  }
+
+  $("form").submit(function(event) {
+    event.preventDefault();
+    updateImage("#myFile", "taco", "#hide");
+    updateImage("#myFile2", "taco2", "#hide2");
+    return false;
+  });
+
+  function interlaceImages(images, lpi) {
+    const stripeWidth = Math.ceil(images[0].width / lpi);
+    const canvas = document.createElement('canvas');
+    canvas.width = images[0].width;
+    canvas.height = images[0].height;
+    const ctx = canvas.getContext('2d');
+
+    for (let x = 0; x < canvas.width; x++) {
+      const imageIndex = Math.floor(x / stripeWidth) % images.length;
+      const image = images[imageIndex];
+      ctx.drawImage(image, x, 0, 1, canvas.height, x, 0, 1, canvas.height);
+    }
+
+    return canvas;
+ 
+ 
+ 
+}
+
+
+
+  function addDiv() {
+    var objTo = document.getElementById('container');
+    var divtest = document.createElement("div");
+   
+    objTo.appendChild(divtest);
+
+    const image1 = document.getElementById('taco');
+    const image2 = document.getElementById('taco2');
+    const images = [image1, image2];
+     var value = document.getElementById('test').value;
+    if (value == "40") {lpi = 1480};
+    if (value == "50") {lpi = 1850};
+if (value == "60") {lpi = 2220};
+
+    if (image1.complete && image2.complete) {
+      const interlacedCanvas = interlaceImages(images, lpi);
+      objTo.appendChild(interlacedCanvas);
+     
+      updateDownloadLink(interlacedCanvas);
+    } else {
+      image1.onload = image2.onload = () => {
+        const interlacedCanvas = interlaceImages(images, lpi);
+        objTo.appendChild(interlacedCanvas);
+       
+     updateDownloadLink (interlacedCanvas);
+     
+       
+      };
+    }
+  }
+     
+
+  $("input[type='button']").click(addDiv);
+
+ 
+
+ 
+function updateDownloadLink(canvas) {
+      const dataURL = canvas.toDataURL('image/png');
+      const link = document.getElementById('downloadLink');
+      link.href = dataURL;
+      link.download = 'interlaced_image.png';
+    }
+  });
+   
+
+ 
+
+       
+
+   
+
+       
+
+   
